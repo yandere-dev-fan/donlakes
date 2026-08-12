@@ -27,3 +27,6 @@ INFRA.md
 # editor
 .vscode/
 .idea/
+
+# dev server log
+dev.log
