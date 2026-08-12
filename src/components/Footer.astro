@@ -1,0 +1,107 @@
+---
+import site from '../content/site.json';
+const year = new Date().getFullYear();
+
+const navLinks = [
+  { label: 'Домики', href: '#cottages' },
+  { label: 'Направления', href: '#services' },
+  { label: 'Цены', href: '#prices' },
+  { label: 'Галерея', href: '#gallery' },
+  { label: 'Как добраться', href: '#location' },
+];
+---
+<footer class="footer" id="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand" data-reveal>
+      <p class="eyebrow">{site.tagline}</p>
+      <a class="footer__phone" href={`tel:${site.phoneRaw}`}>{site.phone}</a>
+      <p class="footer__hours">{site.workHours}</p>
+      <p class="footer__addr">{site.address} · {site.distance}</p>
+    </div>
+
+    <nav class="footer__nav" aria-label="Разделы сайта" data-reveal>
+      <h2 class="footer__h">Разделы</h2>
+      <ul>
+        {navLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="footer__links" data-reveal>
+      <h2 class="footer__h">Мы на картах</h2>
+      <ul>
+        <li><a href={site.mapLinks.yandex} target="_blank" rel="noopener noreferrer">Яндекс.Карты</a></li>
+        {site.social.avito && <li><a href={site.social.avito} target="_blank" rel="noopener noreferrer">Объявление на Авито</a></li>}
+      </ul>
+      <ul class="footer__legal-links">
+        <li><a href="/pravila">Правила проживания</a></li>
+        <li><a href="/politika">Обработка данных</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {year} {site.name}</p>
+    <p class="footer__made">Сайт в разработке · каркас</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-text);
+    color: var(--on-media-muted);
+    padding-block: clamp(48px, 8vw, 88px) 90px; /* нижний запас под моб. кнопку звонка */
+    margin-top: var(--section-gap);
+  }
+  @media (min-width: 768px) {
+    .footer { padding-bottom: 48px; }
+  }
+  .footer__inner {
+    display: grid;
+    gap: 40px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .footer__inner { grid-template-columns: 1.4fr 1fr 1fr; gap: 48px; }
+  }
+  .footer__phone {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    font-weight: 600;
+    color: var(--on-media);
+    margin: 14px 0 6px;
+  }
+  .footer__hours, .footer__addr { font-size: 0.92rem; }
+  .footer__addr { margin-top: 8px; opacity: 0.8; }
+
+  .footer__h {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--on-media);
+    opacity: 0.6;
+    margin-bottom: 16px;
+  }
+  .footer__nav ul, .footer__links ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footer__links ul + ul { margin-top: 18px; }
+  .footer a { transition: color var(--dur-fast) var(--ease-out); }
+  .footer__nav a:hover, .footer__links a:hover { color: var(--on-media); }
+  .footer__legal-links a { font-size: 0.85rem; opacity: 0.7; }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(251, 247, 238, 0.14);
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+</style>

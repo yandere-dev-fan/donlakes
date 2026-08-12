@@ -1,0 +1,219 @@
+---
+import Logo from './Logo.astro';
+import MobileMenu from './MobileMenu.tsx';
+import site from '../content/site.json';
+
+interface Props {
+  solid?: boolean; // стартовать непрозрачной (служебные страницы)
+}
+const { solid = false } = Astro.props;
+
+// Пункты меню ≤16 символов (лимит спеки 4.1)
+const links = [
+  { label: 'Домики', href: '#cottages' },
+  { label: 'Направления', href: '#services' },
+  { label: 'Цены', href: '#prices' },
+  { label: 'Галерея', href: '#gallery' },
+  { label: 'Как добраться', href: '#location' },
+  { label: 'Контакты', href: '#footer' },
+];
+---
+
+<header class:list={['header', { 'is-solid': solid }]} data-header>
+  <div class="header__inner container">
+    <Logo class="header__logo" />
+
+    <nav class="header__nav" aria-label="Основная навигация">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a class="header__phone" href={`tel:${site.phoneRaw}`}>
+        <span class="header__phone-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </span>
+        <span class="header__phone-num">{site.phone}</span>
+      </a>
+
+      <MobileMenu client:load links={links} phone={site.phone} phoneRaw={site.phoneRaw} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-header);
+    height: var(--header-h);
+    color: var(--on-media);
+    transition:
+      height var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out),
+      background-color var(--dur-base) var(--ease-out),
+      color var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-bg);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+    pointer-events: none;
+  }
+
+  /* Прокрутка > 100px: непрозрачная, ниже, с тенью, тёмный текст */
+  .header.is-scrolled,
+  .header.is-solid {
+    height: var(--header-h-scrolled);
+    color: var(--color-text);
+    box-shadow: 0 1px 0 var(--color-border), var(--shadow-sm);
+  }
+  .header.is-scrolled::before,
+  .header.is-solid::before {
+    opacity: 1;
+  }
+
+  /* Скролл вниз — уезжает, вверх — возвращается */
+  .header.is-hidden {
+    transform: translateY(-100%);
+  }
+
+  .header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .header__nav {
+    display: none;
+  }
+  .header__nav ul {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2vw, 30px);
+  }
+  .header__nav a {
+    position: relative;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 6px 0;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .header__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .header__nav a:hover::after,
+  .header__nav a:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    border: 1.5px solid color-mix(in srgb, currentColor 35%, transparent);
+    transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  }
+  .header__phone-ico { display: inline-grid; place-items: center; }
+  .header.is-scrolled .header__phone,
+  .header.is-solid .header__phone {
+    background: var(--color-cta);
+    color: var(--on-media);
+    border-color: transparent;
+  }
+  .header__phone:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+  .header.is-scrolled .header__phone:hover,
+  .header.is-solid .header__phone:hover {
+    background: var(--color-cta-hover);
+  }
+
+  /* ---- Десктоп ---- */
+  @media (min-width: 1024px) {
+    .header__nav { display: block; }
+  }
+
+  /* Бургер виден только до lg */
+  @media (max-width: 1023px) {
+    :global(.mobile-menu) { display: block; }
+    /* Телефон-иконка без номера на самых узких, чтобы влезал бургер */
+  }
+  @media (max-width: 479px) {
+    .header__phone-num { display: none; }
+    .header__phone { padding: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header { transition: background-color var(--dur-fast), color var(--dur-fast); }
+    .header.is-hidden { transform: none; }
+  }
+</style>
+
+<script>
+  // Sticky-поведение: is-scrolled после 100px; уезд вниз / возврат вверх.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (header && !header.classList.contains('is-solid')) {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const y = window.scrollY;
+      header.classList.toggle('is-scrolled', y > 100);
+
+      const goingDown = y > lastY;
+      // прячем только когда ушли достаточно вниз и не у самого верха
+      if (goingDown && y > 300) {
+        header.classList.add('is-hidden');
+      } else {
+        header.classList.remove('is-hidden');
+      }
+      lastY = y;
+      ticking = false;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+</script>

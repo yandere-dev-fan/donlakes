@@ -1,0 +1,232 @@
+---
+import MediaSlot from '../MediaSlot.astro';
+import site from '../../content/site.json';
+
+// H1 разбит на строки для построчного появления (задержка 80мс между строками).
+const titleLines = ['Тихий отдых на Дону', 'у самой воды'];
+---
+<section id="hero" class="hero" aria-label="Донские озёра — база отдыха">
+  <!-- Слой медиа: десктоп — видео 16/9, xs–sm — постер 3/4 (видео не грузится) -->
+  <div class="hero__media" data-parallax="0.18" aria-hidden="true">
+    <div class="hero__media-desktop">
+      <MediaSlot id="hero/video-main" ratio="16/9" type="video" priority rounded={false} />
+    </div>
+    <div class="hero__media-mobile">
+      <MediaSlot id="hero/poster-mobile" ratio="3/4" type="image" priority rounded={false} />
+    </div>
+  </div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="hero__content container">
+    <p class="hero__eyebrow">{site.distance}</p>
+
+    <h1 class="hero__title">
+      {titleLines.map((line, i) => (
+        <span class="hero__line" style={`--line: ${i};`}><span>{line}</span></span>
+      ))}
+    </h1>
+
+    <p class="hero__sub">
+      Летние домики и уютные срубы, зарыблённое озеро, пляж с пологим входом, мангалы и детская зона.
+    </p>
+
+    <p class="hero__price">Домики от 3&nbsp;500&nbsp;₽ в сутки</p>
+
+    <div class="hero__actions">
+      <a class="hero__btn hero__btn--cta" href={`tel:${site.phoneRaw}`}>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        Позвонить
+      </a>
+      <a class="hero__btn hero__btn--ghost" href="#cottages">Смотреть домики</a>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#services" aria-label="Листайте вниз">
+    <span class="hero__scroll-txt">Листайте</span>
+    <span class="hero__scroll-line" aria-hidden="true"></span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 560px;
+    height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    color: var(--on-media);
+    isolation: isolate;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: -8% 0 -8% 0; /* запас под параллакс, чтобы не оголялись края */
+    z-index: -2;
+  }
+  .hero__media :global(.media-slot) {
+    height: 100%;
+  }
+  .hero__media-desktop { display: none; height: 100%; }
+  .hero__media-mobile { display: block; height: 100%; }
+  @media (min-width: 768px) {
+    .hero__media-desktop { display: block; }
+    .hero__media-mobile { display: none; }
+  }
+
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(to bottom, var(--overlay-top) 0%, transparent 26%),
+      linear-gradient(to top, var(--overlay-bottom) 0%, transparent 62%);
+  }
+
+  .hero__content {
+    padding-bottom: clamp(80px, 14vh, 160px);
+    padding-top: calc(var(--header-h) + 24px);
+    max-width: 900px;
+  }
+
+  .hero__eyebrow {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--on-media);
+    opacity: 0;
+    animation: hero-up var(--dur-slow) var(--ease-out) 0.1s forwards;
+  }
+
+  .hero__title {
+    font-size: var(--step-4);
+    font-weight: 600;
+    line-height: 1.02;
+    margin: 14px 0 0;
+    color: var(--on-media);
+  }
+  .hero__line {
+    display: block;
+    overflow: hidden;
+  }
+  .hero__line > span {
+    display: block;
+    transform: translateY(110%);
+    animation: hero-line var(--dur-slow) var(--ease-out) forwards;
+    animation-delay: calc(0.25s + var(--line) * 80ms);
+  }
+
+  .hero__sub {
+    font-size: var(--step-1);
+    max-width: 44ch;
+    margin-top: 22px;
+    color: var(--on-media-muted);
+    opacity: 0;
+    animation: hero-up var(--dur-slow) var(--ease-out) 0.5s forwards;
+  }
+
+  .hero__price {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-bg) 16%, transparent);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(251, 247, 238, 0.28);
+    font-weight: 600;
+    font-size: var(--step-0);
+    opacity: 0;
+    animation: hero-up var(--dur-slow) var(--ease-out) 0.62s forwards;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+    opacity: 0;
+    animation: hero-up var(--dur-slow) var(--ease-out) 0.74s forwards;
+  }
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 1em 1.7em;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: var(--step-0);
+    transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+    will-change: transform;
+  }
+  .hero__btn--cta {
+    background: var(--color-cta);
+    color: var(--on-media);
+    box-shadow: var(--shadow-md);
+  }
+  .hero__btn--cta:hover { background: var(--color-cta-hover); transform: translateY(-2px); }
+  .hero__btn--ghost {
+    border: 1.5px solid rgba(251, 247, 238, 0.55);
+    color: var(--on-media);
+  }
+  .hero__btn--ghost:hover { background: rgba(251, 247, 238, 0.12); transform: translateY(-2px); }
+
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--on-media-muted);
+    opacity: 0;
+    animation: hero-up var(--dur-slow) var(--ease-out) 1s forwards;
+  }
+  .hero__scroll-txt {
+    font-size: 0.66rem;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+  .hero__scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero__scroll-line::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: var(--on-media);
+    animation: scroll-pulse 1.9s var(--ease-in-out) infinite;
+  }
+  @media (max-width: 767px) {
+    .hero__scroll { display: none; }
+  }
+
+  @keyframes hero-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes hero-line {
+    to { transform: translateY(0); }
+  }
+  @keyframes scroll-pulse {
+    0% { top: -50%; }
+    100% { top: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__eyebrow, .hero__sub, .hero__price, .hero__actions, .hero__scroll { animation: none; opacity: 1; }
+    .hero__line > span { animation: none; transform: none; }
+    .hero__scroll-line::after { animation: none; }
+  }
+</style>

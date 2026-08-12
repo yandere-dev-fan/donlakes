@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import site from '../content/site.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** true → шапка стартует непрозрачной (служебные страницы, страница домика) */
+  solidHeader?: boolean;
+}
+
+const {
+  title = `${site.name} — база отдыха на Дону`,
+  description = 'База отдыха «Донские озёра» в 20 минутах от Ростова и Новочеркасска: летние домики и срубы, рыбалка, зона у воды, мангалы и детская площадка.',
+  solidHeader = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f7f1e6" />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="ru_RU" />
+  </head>
+  <body data-solid-header={solidHeader ? 'true' : undefined}>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <slot name="header" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+    <slot name="fixed" />
+    <script>
+      import '../lib/init.ts';
+    </script>
+  </body>
+</html>

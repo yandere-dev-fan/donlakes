@@ -1,0 +1,38 @@
+[
+  {
+    "key": "cottages",
+    "name": "Домики",
+    "short": "Летние и срубы у воды",
+    "href": "#cottages"
+  },
+  {
+    "key": "waterfront",
+    "name": "У воды",
+    "short": "Пляж, пологий песчаный вход",
+    "href": "#waterfront"
+  },
+  {
+    "key": "gazebo",
+    "name": "Беседки",
+    "short": "В тени, столики и мангалы",
+    "href": "#gazebo"
+  },
+  {
+    "key": "fishing",
+    "name": "Рыбалка",
+    "short": "Карп, сазан, амур, толстолоб",
+    "href": "#fishing"
+  },
+  {
+    "key": "bbq",
+    "name": "Мангалы",
+    "short": "У каждого домика и столика",
+    "href": "#bbq"
+  },
+  {
+    "key": "kids",
+    "name": "Детям",
+    "short": "Площадка, батут, живой уголок",
+    "href": "#kids"
+  }
+]

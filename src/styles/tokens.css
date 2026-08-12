@@ -1,0 +1,90 @@
+/* =============================================================
+   Дизайн-токены «Донские озёра» — тёплый органик.
+   Все значения объявлены переменными: смена палитры/ритма — одна правка.
+   ============================================================= */
+
+:root {
+  /* ---- Цвет ---- */
+  --color-bg: #f7f1e6;            /* тёплый песок/крем — фон страницы */
+  --color-surface: #ffffff;      /* карточки, поповеры */
+  --color-surface-warm: #efe7d6; /* тёплая подложка секций (чередование ритма) */
+  --color-text: #2b2a26;         /* тёплый уголь — основной текст */
+  --color-muted: #6e6a60;        /* второстепенный текст */
+  --color-accent: #3e6b54;       /* озёрно-лесной зелёный — природа/вода */
+  --color-accent-hover: #345a47;
+  --color-cta: #c4703f;          /* тёплая терракота — кнопка звонка */
+  --color-cta-hover: #ad5f32;
+  --color-border: #e2d8c5;
+
+  /* оверлеи для медиа (hero, рыбалка) */
+  --overlay-top: rgba(20, 26, 22, 0.28);
+  --overlay-bottom: rgba(20, 26, 22, 0.62);
+  --on-media: #fbf7ee;           /* текст поверх тёмного медиа */
+  --on-media-muted: rgba(251, 247, 238, 0.78);
+
+  /* ---- Типографика ---- */
+  --font-display: 'Cormorant Variable', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --font-body: 'Manrope Variable', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* модульная шкала (mobile-first, растёт по clamp) */
+  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.34rem + 0.8vw, 2.25rem);
+  --step-3: clamp(2rem, 1.66rem + 1.7vw, 3.5rem);
+  --step-4: clamp(2.6rem, 1.9rem + 3.5vw, 5.5rem);
+  --step-5: clamp(3.2rem, 2rem + 6vw, 7rem);
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-normal: 1.6;
+  --tracking-wide: 0.16em;
+  --tracking-normal: 0;
+
+  /* ---- Радиусы ---- */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* ---- Тени (мягкие, тёплый органик) ---- */
+  --shadow-sm: 0 2px 8px rgba(43, 42, 38, 0.06);
+  --shadow-md: 0 12px 30px -12px rgba(43, 42, 38, 0.18);
+  --shadow-lg: 0 30px 60px -24px rgba(43, 42, 38, 0.28);
+
+  /* ---- Движение ---- */
+  --dur-fast: 200ms;
+  --dur-base: 400ms;
+  --dur-slow: 800ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---- Слои ---- */
+  --z-header: 100;
+  --z-callbar: 90;
+  --z-modal: 200;
+
+  /* ---- Сетка / ритм ---- */
+  --container-max: 1280px;
+  --gutter: 20px;                /* xs–sm */
+  --section-gap: 64px;           /* xs */
+  --header-h: 88px;
+  --header-h-scrolled: 64px;
+  --callbar-h: 56px;
+}
+
+/* Планшеты */
+@media (min-width: 768px) {
+  :root {
+    --gutter: 40px;
+    --section-gap: 96px;
+  }
+}
+
+/* Ноутбуки+ */
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 64px;
+    --section-gap: 128px;
+  }
+}

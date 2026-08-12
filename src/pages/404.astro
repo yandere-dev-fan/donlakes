@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import site from '../content/site.json';
+---
+<BaseLayout title="Страница не найдена — Донские озёра" solidHeader>
+  <Header slot="header" solid />
+
+  <section class="nf">
+    <div class="container nf__inner">
+      <p class="eyebrow">Ошибка 404</p>
+      <h1 class="nf__title">Такой страницы нет</h1>
+      <p class="nf__text">Возможно, ссылка устарела. Вернитесь на главную или позвоните нам — поможем.</p>
+      <div class="nf__actions">
+        <a class="nf__btn nf__btn--accent" href="/">На главную</a>
+        <a class="nf__btn nf__btn--cta" href={`tel:${site.phoneRaw}`}>{site.phone}</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .nf { min-height: 70svh; display: flex; align-items: center; padding-top: var(--header-h); }
+  .nf__inner { max-width: 620px; text-align: center; margin-inline: auto; }
+  .nf__title { font-size: var(--step-4); margin: 12px 0 16px; }
+  .nf__text { color: var(--color-muted); font-size: var(--step-1); }
+  .nf__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; }
+  .nf__btn { padding: 0.9em 1.7em; border-radius: var(--radius-pill); font-weight: 600; }
+  .nf__btn--accent { background: var(--color-accent); color: var(--on-media); }
+  .nf__btn--accent:hover { background: var(--color-accent-hover); }
+  .nf__btn--cta { background: var(--color-cta); color: var(--on-media); }
+  .nf__btn--cta:hover { background: var(--color-cta-hover); }
+</style>

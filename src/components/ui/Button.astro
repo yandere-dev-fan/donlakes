@@ -1,0 +1,77 @@
+---
+/** Универсальная кнопка/ссылка. variant: cta (терракота) | accent (зелёный) | ghost (контур) */
+interface Props {
+  href: string;
+  variant?: 'cta' | 'accent' | 'ghost';
+  size?: 'md' | 'lg';
+  class?: string;
+  external?: boolean;
+}
+const { href, variant = 'accent', size = 'md', class: className = '', external = false } = Astro.props;
+const rel = external ? 'noopener noreferrer' : undefined;
+const target = external ? '_blank' : undefined;
+---
+<a
+  href={href}
+  rel={rel}
+  target={target}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, className]}
+>
+  <span class="btn__label"><slot /></span>
+</a>
+
+<style>
+  .btn {
+    --btn-bg: var(--color-accent);
+    --btn-bg-hover: var(--color-accent-hover);
+    --btn-fg: var(--on-media);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.85em 1.6em;
+    border-radius: var(--radius-pill);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-weight: 600;
+    font-size: var(--step-0);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-align: center;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+    box-shadow: var(--shadow-sm);
+    will-change: transform;
+  }
+  .btn--lg {
+    padding: 1.05em 2em;
+    font-size: var(--step-1);
+  }
+  .btn--cta {
+    --btn-bg: var(--color-cta);
+    --btn-bg-hover: var(--color-cta-hover);
+  }
+  .btn--ghost {
+    --btn-bg: transparent;
+    --btn-fg: currentColor;
+    border: 1.5px solid currentColor;
+    box-shadow: none;
+  }
+  .btn:hover {
+    background: var(--btn-bg-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn--ghost:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    transform: translateY(-2px);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover { transform: none; }
+  }
+</style>

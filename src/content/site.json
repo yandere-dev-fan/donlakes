@@ -1,0 +1,32 @@
+{
+  "name": "Донские озёра",
+  "tagline": "База отдыха на Дону",
+  "phone": "8 988 551 08 81",
+  "phoneRaw": "+79885510881",
+  "email": "",
+  "workHours": "Приём звонков ежедневно 9:00–21:00",
+  "dayVisit": {
+    "hours": "9:00–21:00",
+    "price": 500,
+    "unit": "₽ с человека",
+    "note": "дети до 7 лет — бесплатно"
+  },
+  "checkIn": "с 14:00",
+  "checkOut": "до 11:00",
+  "address": "Ростовская обл., х. Рассвет",
+  "distance": "20 минут от Ростова и Новочеркасска",
+  "coords": { "lat": 47.35, "lng": 40.05 },
+  "mapLinks": {
+    "yandex": "https://yandex.ru/maps/org/donskiye_ozera/182310500073/",
+    "gis": ""
+  },
+  "social": {
+    "avito": "https://www.avito.ru/rostovskaya_oblast_rassvet/predlozheniya_uslug/besedki_mesto_otdyha_domiki_rybalka_8269014848"
+  },
+  "legal": {
+    "entity": "",
+    "inn": "",
+    "ogrn": "",
+    "legalAddress": ""
+  }
+}

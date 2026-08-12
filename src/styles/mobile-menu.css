@@ -1,0 +1,114 @@
+/* Стили мобильного меню (React-остров — нужен глобальный CSS, не scoped) */
+
+.mobile-menu {
+  display: none; /* включается в Header на xs–md */
+}
+
+.mobile-menu__burger {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  color: inherit;
+}
+
+.mobile-menu__bars {
+  position: relative;
+  width: 24px;
+  height: 16px;
+}
+.mobile-menu__bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.mobile-menu__bars span:nth-child(1) { top: 0; }
+.mobile-menu__bars span:nth-child(2) { top: 7px; }
+.mobile-menu__bars span:nth-child(3) { top: 14px; }
+.mobile-menu__bars.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mobile-menu__bars.is-open span:nth-child(2) { opacity: 0; }
+.mobile-menu__bars.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding: calc(var(--header-h) + 20px) var(--gutter) calc(var(--callbar-h) + 40px);
+  background: var(--color-bg);
+  color: var(--color-text);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-out), visibility var(--dur-base);
+}
+.mobile-menu__overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu__nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-menu__nav a {
+  display: inline-block;
+  padding: 10px 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 8vw, 2.8rem);
+  font-weight: 600;
+  color: var(--color-text);
+  transform: translateY(12px);
+  opacity: 0;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.mobile-menu__overlay.is-open .mobile-menu__nav a {
+  animation: menu-item-in var(--dur-base) var(--ease-out) forwards;
+  animation-delay: calc(120ms + var(--i) * 55ms);
+}
+.mobile-menu__nav a:hover,
+.mobile-menu__nav a:focus-visible {
+  color: var(--color-accent);
+}
+
+.mobile-menu__phone {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 22px;
+  align-self: flex-start;
+  border-radius: var(--radius-md);
+  background: var(--color-cta);
+  color: var(--on-media);
+  box-shadow: var(--shadow-md);
+}
+.mobile-menu__phone span {
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.mobile-menu__phone strong {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+@keyframes menu-item-in {
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu__overlay.is-open .mobile-menu__nav a {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,76 @@
+---
+import site from '../content/site.json';
+---
+<div class="callbar" data-callbar aria-hidden="false">
+  <a class="callbar__btn" href={`tel:${site.phoneRaw}`}>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/>
+    </svg>
+    <span>Позвонить&nbsp;· {site.phone}</span>
+  </a>
+</div>
+
+<style>
+  .callbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-callbar);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--color-border);
+    transform: translateY(120%);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .callbar.is-visible {
+    transform: translateY(0);
+  }
+  .callbar__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: var(--callbar-h);
+    border-radius: var(--radius-md);
+    background: var(--color-cta);
+    color: var(--on-media);
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: var(--shadow-md);
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .callbar__btn:active { background: var(--color-cta-hover); }
+
+  /* Только xs–sm (основной трафик). На md+ прячем — там телефон в шапке. */
+  @media (min-width: 768px) {
+    .callbar { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .callbar { transition: opacity var(--dur-fast); }
+  }
+</style>
+
+<script>
+  // Появляется после ухода первого экрана.
+  const bar = document.querySelector<HTMLElement>('[data-callbar]');
+  if (bar) {
+    let ticking = false;
+    const update = () => {
+      bar.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.7);
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+</script>

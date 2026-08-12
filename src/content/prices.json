@@ -1,0 +1,26 @@
+{
+  "note": "Гарантированный заезд с 14:00, выезд до 11:00. Цены за домик в сутки.",
+  "rows": [
+    {
+      "object": "Летний домик",
+      "slug": "letnie-domiki",
+      "capacityLabel": "2–3 гостя",
+      "priceTwo": 3500,
+      "priceThree": 4000,
+      "priceFrom": 3500
+    },
+    {
+      "object": "Сруб со всеми удобствами",
+      "slug": "sruby",
+      "capacityLabel": "2–4 гостя",
+      "priceTwo": 5000,
+      "priceThree": 6000,
+      "priceFrom": 5000,
+      "extraGuestPrice": 1000
+    }
+  ],
+  "extra": [
+    { "label": "Дневное пребывание (9:00–21:00)", "value": "500 ₽ с человека, дети до 7 лет бесплатно" },
+    { "label": "Дополнительное место в срубе", "value": "1000 ₽" }
+  ]
+}
