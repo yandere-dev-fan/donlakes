@@ -4,17 +4,19 @@ set -euo pipefail
 server_dir=$(cd -- "$(dirname -- "$0")" && pwd)
 python3 - <<'PY'
 import json, urllib.request, sys
-for hostname in ['donozera.ru', 'www.donozera.ru']:
-    for record in ['A', 'AAAA']:
-        req=urllib.request.Request('https://cloudflare-dns.com/dns-query?name='+hostname+'&type='+record, headers={'accept':'application/dns-json'})
-        with urllib.request.urlopen(req,timeout=15) as response: data=json.load(response)
-        answers={r['data'] for r in data.get('Answer',[]) if r['type']==(1 if record=='A' else 28)}
-        if record=='A' and answers!={'135.106.164.41'}:
-            sys.exit(f'DNS not ready: {hostname} A = {answers}; expected 135.106.164.41')
-        if record=='AAAA' and answers:
-            sys.exit(f'Unexpected IPv6 record for {hostname}: {answers}; configure IPv6 before issuing certificate')
+for resolver in ['https://cloudflare-dns.com/dns-query', 'https://dns.google/resolve']:
+    for hostname in ['donozera.ru', 'www.donozera.ru']:
+        for record in ['A', 'AAAA']:
+            req=urllib.request.Request(resolver+'?name='+hostname+'&type='+record, headers={'accept':'application/dns-json'})
+            with urllib.request.urlopen(req,timeout=15) as response: data=json.load(response)
+            answers={r['data'] for r in data.get('Answer',[]) if r['type']==(1 if record=='A' else 28)}
+            if record=='A' and answers!={'135.106.164.41'}:
+                sys.exit(f'DNS not ready: {hostname} A = {answers}; expected 135.106.164.41 ({resolver})')
+            if record=='AAAA' and answers:
+                sys.exit(f'Unexpected IPv6 record for {hostname}: {answers}; configure IPv6 before issuing certificate')
 print('Public DNS is ready.')
 PY
+if [[ "${1:-}" == '--check-dns' ]]; then exit 0; fi
 install -d -m 755 /var/www/letsencrypt
 install -m 644 "$server_dir/site.conf" /etc/nginx/snippets/donozera-site.conf
 # Keep an already active HTTPS configuration during renewals or retries.

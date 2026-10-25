@@ -1,0 +1,14 @@
+[Unit]
+Description=Finish Donozera HTTPS installation after public DNS propagation
+After=network-online.target nginx.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/donozera-domain/wait-domain.sh
+ExecStartPost=/usr/bin/systemctl disable donozera-domain.service
+TimeoutStartSec=24h
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
