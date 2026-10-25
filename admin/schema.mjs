@@ -2,7 +2,7 @@ export const groups = [
   ['hero', 'Первый экран', [['description', 'Описание']]],
   ['intro', 'О базе', [['paragraphOne', 'Первый абзац'], ['paragraphTwo', 'Второй абзац']]],
   ['contact', 'Контакты и время работы', [
-    ['phone', 'Телефон, формат +79885510881', 'tel'], ['description', 'Текст в блоке контактов'],
+    ['phone', 'Телефон, формат +79185886812', 'tel'], ['description', 'Текст в блоке контактов'],
     ['mapUrl', 'Ссылка на Яндекс Карты', 'url'], ['checkIn', 'Заезд с', 'time'], ['checkOut', 'Выезд до', 'time'],
     ['dayStart', 'Дневной отдых с', 'time'], ['dayEnd', 'Дневной отдых до', 'time'], ['childrenNote', 'Условия для детей'],
   ]],
@@ -24,7 +24,7 @@ export function validateContent(input) {
         if (!Number.isSafeInteger(value) || value < 0 || value > 1_000_000) throw new Error(`${label}: введите целое число от 0 до 1 000 000`);
       } else {
         if (typeof value !== 'string' || !value.trim() || value.length > 3000) throw new Error(`${label}: заполните поле (до 3000 символов)`);
-        if (type === 'tel' && !/^\+7\d{10}$/.test(value)) throw new Error('Телефон: используйте формат +79885510881');
+        if (type === 'tel' && !/^\+7\d{10}$/.test(value)) throw new Error('Телефон: используйте формат +79185886812');
         if (type === 'time' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) throw new Error(`${label}: используйте ЧЧ:ММ`);
         if (type === 'url') {
           let url;
