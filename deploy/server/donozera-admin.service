@@ -1,0 +1,26 @@
+[Unit]
+Description=Private Donozera content administration
+After=network.target tailscaled.service
+
+[Service]
+Type=simple
+User=donozera
+Group=donozera
+WorkingDirectory=/opt/donozera/source
+Environment=NODE_ENV=production
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Environment=ADMIN_REQUIRE_TAILSCALE=true
+ExecStart=/usr/local/bin/node /opt/donozera/source/admin/server.mjs
+Restart=on-failure
+RestartSec=3
+MemoryMax=1536M
+CPUQuota=150%
+UMask=0022
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/donozera /var/www/donozera /opt/donozera
+
+[Install]
+WantedBy=multi-user.target

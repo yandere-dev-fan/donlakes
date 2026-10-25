@@ -1,15 +1,15 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 // Статический сайт-визитка «Донские озёра».
 // SSG-вывод + точечные React-острова для интерактива (галерея, карта, меню).
-// Деплой (позже, по отдельному разрешению): сборка на PC → готовая статика на nginx VPS.
+// Публичная статика обслуживается Nginx; админка работает отдельно через Tailscale.
 export default defineConfig({
-  site: 'https://donskie-ozera.example',
+  site: 'https://donozera.ru',
   output: 'static',
-  integrations: [react(), sitemap()],
+  devToolbar: { enabled: false },
+  integrations: [sitemap({ filter: (page) => !page.includes("map-review") })],
   build: {
     inlineStylesheets: 'auto',
   },

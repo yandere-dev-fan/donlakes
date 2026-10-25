@@ -47,7 +47,14 @@ const navLinks = [
 
 <style>
   .footer {
-    background: var(--color-text);
+    background-color: var(--color-ink);
+    background-image:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0.3)),
+      repeating-linear-gradient(
+        90deg,
+        rgba(201, 138, 75, 0.03) 0 1px,
+        transparent 1px 4px
+      );
     color: var(--on-media-muted);
     padding-block: clamp(48px, 8vw, 88px) 90px; /* нижний запас под моб. кнопку звонка */
     margin-top: var(--section-gap);

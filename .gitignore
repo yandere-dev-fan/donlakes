@@ -30,3 +30,12 @@ INFRA.md
 
 # dev server log
 dev.log
+
+# prepared server releases
+.deploy/
+
+# Local administration, tests, credentials
+.admin-data/
+.npm/
+test-results/
+playwright-report/

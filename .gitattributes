@@ -1,0 +1,7 @@
+INFRA.md export-ignore
+photos/ export-ignore
+.claude/ export-ignore
+test-results/ export-ignore
+deploy/edge/ export-ignore
+deploy/nginx/ export-ignore
+deploy/compose.yaml export-ignore

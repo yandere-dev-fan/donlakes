@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MapDrawing from '../components/MapDrawing.astro';
+import { places } from '../content/places';
+import { roads } from '../content/map-geometry';
+---
+<BaseLayout title="Уточнить карту — Донские озёра" noindex>
+<main id="main" class="editor-page">
+<a href="/#territory" class="text-link" style="max-width:240px">← К карте на сайте</a>
+<p class="eyebrow">РАЗМЕТКА ТЕРРИТОРИИ</p><h1>Покажи, где <em>на самом деле.</em></h1>
+<p class="editor-intro">Общие душ, туалет и кухня уже выбраны. Нажми на место этого здания на схеме. Можно так же переставить другие объекты или указать повороты дорог.</p>
+<div class="editor-controls"><label for="edit-object">Что исправляем<select id="edit-object"><optgroup label="Объекты">{[...places].sort((a,b)=>a.id==='facilities'?-1:b.id==='facilities'?1:0).map(p=><option value={p.id} selected={p.id==='facilities'}>{p.number} — {p.name}</option>)}</optgroup><optgroup label="Дороги">{Object.entries(roads).map(([id,r])=><option value={`road:${id}`}>{r.name}</option>)}</optgroup></select></label><p id="edit-help">Нажми там, где расположены общие душ, туалет и кухня.</p></div>
+<div class="editor-scroll"><div class="editor-canvas" id="edit-canvas"><img src="/images/territory-plan.svg" alt="Схема базы для уточнения расположения объектов" width="1200" height="850"/><MapDrawing/><svg id="editor-pins" viewBox="300 240 1200 850" aria-label="Метки объектов" /></div></div>
+<p class="editor-hint">На телефоне двигай схему вбок. Для дороги выбери её в списке и отмечай начало, повороты и конец по порядку.</p>
+<div class="editor-actions"><button id="undo-point">Отменить последнюю правку</button><button id="reset-road" hidden>Начать эту дорогу заново</button><button id="save-map" class="button cream">Применить в предпросмотре ↗</button><button id="copy-map" class="button cream">Скопировать разметку ↗</button></div>
+<p id="edit-status" role="status">Правки сохраняются только в этом браузере. Чтобы я перенёс их в сайт, скопируй разметку и пришли её в чат.</p>
+<textarea id="export-map" rows="9" aria-label="Разметка для отправки в чат" hidden></textarea>
+</main>
+<script>import '../lib/map-editor';</script>
+<style>
+.editor-page{max-width:1350px;margin:auto;padding:25px 35px calc(120px + env(safe-area-inset-bottom))}.editor-page>.eyebrow{margin-top:35px}.editor-page h1{font-size:clamp(42px,5vw,66px)}.editor-intro{font-size:16px;max-width:850px;margin:20px 0 25px;color:var(--muted)}.editor-controls{display:flex;gap:25px;align-items:end;margin-bottom:16px}.editor-controls label{font-size:14px;min-width:270px}.editor-controls select{display:block;width:100%;font:inherit;padding:12px;color:var(--ink);border:1px solid var(--control-border);background:var(--panel);margin-top:8px}.editor-controls p{font-size:14px;color:var(--muted);max-width:650px;margin-bottom:10px}.editor-scroll{overflow-x:auto;border:1px solid var(--line);overscroll-behavior-x:contain}.editor-canvas{position:relative;min-width:820px;aspect-ratio:1200/850;cursor:crosshair}.editor-canvas>img{height:100%;width:100%;pointer-events:none;user-select:none}.editor-canvas>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.editor-hint,#edit-status{font-size:14px;color:var(--muted);margin:15px 0}.editor-actions{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}.editor-actions button{font-size:14px;padding:12px 16px;border:1px solid var(--control-border);border-radius:3px;background:var(--panel);color:var(--ink)}.editor-actions button.cream{background:var(--action-bg);color:var(--action-ink);border-color:var(--action-bg)}.editor-actions button:not(:disabled):hover{background:var(--control-hover);color:var(--ink)}.editor-actions button.cream:not(:disabled):hover{background:var(--action-hover);color:var(--action-ink)}.editor-actions button:not(:disabled):active{transform:translateY(1px)}.editor-actions button:disabled{opacity:1;color:var(--muted);background:var(--surface);border-color:var(--line);cursor:not-allowed}#export-map{width:100%;font:14px/1.6 var(--sans);padding:15px;border:1px solid var(--line);color:var(--ink);background:var(--panel)}@media(max-width:600px){.editor-page{padding:20px 20px calc(120px + env(safe-area-inset-bottom))}.editor-controls{display:block}.editor-controls p{margin-top:15px}.editor-page h1{font-size:44px}.editor-actions{gap:8px}.editor-actions button{flex:1 1 45%}}
+</style>
+</BaseLayout>

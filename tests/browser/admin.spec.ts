@@ -1,0 +1,34 @@
+import { test, expect } from '@playwright/test';
+import { spawn, type ChildProcess } from 'node:child_process';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import net from 'node:net';
+let child:ChildProcess, dir:string, base:string;
+test.beforeEach(async()=>{
+  dir=await mkdtemp(join(tmpdir(),'donozera-admin-browser-'));
+  const probe=net.createServer();await new Promise<void>(resolve=>probe.listen(0,'127.0.0.1',resolve));
+  const port=(probe.address() as net.AddressInfo).port;await new Promise<void>(resolve=>probe.close(()=>resolve()));
+  base=`http://127.0.0.1:${port}`;
+  child=spawn(process.execPath,['admin/server.mjs'],{env:{...process.env,ADMIN_PORT:String(port),ADMIN_REQUIRE_TAILSCALE:'false',DONOZERA_DATA:dir,DONOZERA_SOURCE:process.cwd()},stdio:['ignore','pipe','pipe']});
+  await new Promise<void>((resolve,reject)=>{child.stdout!.once('data',()=>resolve());child.once('exit',()=>reject(new Error('Admin failed to start')));});
+});
+test.afterEach(async()=>{child?.kill();await rm(dir,{recursive:true,force:true});});
+test('админка: поля, сохранение и явная кнопка публикации',async({page},info)=>{
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.goto(base);
+  await expect(page.getByRole('button',{name:'Опубликовать изменения'})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Сохранить черновик'})).toBeDisabled();
+  await expect(page.locator('fieldset')).toHaveCount(8);
+  const price=page.locator('[name="day.price"]');
+  await price.fill('875');
+  await expect(page.getByRole('button',{name:'Опубликовать изменения'})).toBeDisabled();
+  await page.getByRole('button',{name:'Сохранить черновик'}).click();
+  await expect(page.locator('#status')).toContainText('Черновик сохранён');
+  await expect(page.getByRole('button',{name:'Опубликовать изменения'})).toBeEnabled();
+  await page.reload();
+  await expect(price).toHaveValue('875');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+  await page.screenshot({path:`test-results/admin-${info.project.name}.png`,fullPage:true});
+  expect(errors).toEqual([]);
+});

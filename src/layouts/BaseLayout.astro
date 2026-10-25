@@ -1,45 +1,30 @@
 ---
 import '../styles/global.css';
-import site from '../content/site.json';
-
-interface Props {
-  title?: string;
-  description?: string;
-  /** true → шапка стартует непрозрачной (служебные страницы, страница домика) */
-  solidHeader?: boolean;
-}
-
-const {
-  title = `${site.name} — база отдыха на Дону`,
-  description = 'База отдыха «Донские озёра» в 20 минутах от Ростова и Новочеркасска: летние домики и срубы, рыбалка, зона у воды, мангалы и детская площадка.',
-  solidHeader = false,
-} = Astro.props;
+import content from '../content/managed.json';
+import { phoneLabel } from '../lib/format';
+interface Props { title?: string; description?: string; solidHeader?: boolean; noindex?: boolean }
+const { noindex = false, title = 'Донские озёра — отдых у воды рядом с Ростовом', description = 'Домики, баня, беседки и рыбалка на базе «Донские озёра». В 20 минутах от Ростова и Новочеркасска. Фото, цены и карта территории.' } = Astro.props;
 ---
-
 <!doctype html>
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f7f1e6" />
-    <title>{title}</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:locale" content="ru_RU" />
-  </head>
-  <body data-solid-header={solidHeader ? 'true' : undefined}>
-    <a class="skip-link" href="#main">Перейти к содержимому</a>
-    <slot name="header" />
-    <main id="main">
-      <slot />
-    </main>
-    <slot name="footer" />
-    <slot name="fixed" />
-    <script>
-      import '../lib/init.ts';
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#203e35" />
+    <script is:inline>
+      (() => { let theme; try { theme = localStorage.getItem('donozera-theme'); } catch {} document.documentElement.dataset.theme = theme === 'dark' || theme === 'light' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; })();
     </script>
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:locale" content="ru_RU" />
+  </head>
+  <body><a class="skip-link" href="#main">Перейти к содержимому</a><slot />
+    <div class="quick-actions" aria-label="Быстрые действия">
+      <button class="theme-toggle" type="button" aria-label="Включить тёмную тему" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><span>Тёмная тема</span></button>
+      <a class="quick-call" href={`tel:${content.contact.phone}`} aria-label={`Позвонить на базу: ${phoneLabel(content.contact.phone)}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 3 4 5-3 3c2 3 3 4 6 6l3-3 5 4c-1 4-4 4-7 2C8 17 4 13 3 8c-1-3 0-5 3-5Z"/></svg><span>Позвонить</span></a>
+    </div>
+    <script>import '../lib/theme';</script>
   </body>
 </html>

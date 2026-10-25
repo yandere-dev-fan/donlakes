@@ -4,18 +4,33 @@ import site from '../../content/site.json';
 
 // H1 разбит на строки для построчного появления (задержка 80мс между строками).
 const titleLines = ['Тихий отдых на Дону', 'у самой воды'];
+
+/**
+ * Слайды hero. Реальных файлов пока нет — MediaSlot рисует заглушки.
+ * Когда появятся фото: заполнить `src` (путь в public/, напр. '/media/hero/01.webp')
+ * и при желании `srcset`/портретную версию для мобильных.
+ */
+const slides = [
+  { id: 'hero/slide-01', src: '', alt: 'Закат над озером' },
+  { id: 'hero/slide-02', src: '', alt: 'Сруб с верандой' },
+  { id: 'hero/slide-03', src: '', alt: 'Вечер у мангала' },
+  { id: 'hero/slide-04', src: '', alt: 'Пляж с пологим входом' },
+];
 ---
 <section id="hero" class="hero" aria-label="Донские озёра — база отдыха">
-  <!-- Слой медиа: десктоп — видео 16/9, xs–sm — постер 3/4 (видео не грузится) -->
+  <!-- Слой медиа: кроссфейд-«кино» из фото (Ken Burns) + янтарный свет костра -->
   <div class="hero__media" data-parallax="0.18" aria-hidden="true">
-    <div class="hero__media-desktop">
-      <MediaSlot id="hero/video-main" ratio="16/9" type="video" priority rounded={false} />
-    </div>
-    <div class="hero__media-mobile">
-      <MediaSlot id="hero/poster-mobile" ratio="3/4" type="image" priority rounded={false} />
+    <div class="hero__slides">
+      {slides.map((s, i) => (
+        <div class:list={['hero__slide', { 'is-active': i === 0 }]} data-slide>
+          <MediaSlot id={s.id} src={s.src} ratio="16/9" type="image" priority={i === 0} alt={s.alt} rounded={false} />
+        </div>
+      ))}
     </div>
   </div>
+
   <div class="hero__scrim" aria-hidden="true"></div>
+  <div class="hero__firelight" aria-hidden="true"></div>
 
   <div class="hero__content container">
     <p class="hero__eyebrow">{site.distance}</p>
@@ -66,14 +81,33 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
     inset: -8% 0 -8% 0; /* запас под параллакс, чтобы не оголялись края */
     z-index: -2;
   }
-  .hero__media :global(.media-slot) {
-    height: 100%;
+  .hero__slides {
+    position: absolute;
+    inset: 0;
   }
-  .hero__media-desktop { display: none; height: 100%; }
-  .hero__media-mobile { display: block; height: 100%; }
-  @media (min-width: 768px) {
-    .hero__media-desktop { display: block; }
-    .hero__media-mobile { display: none; }
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.6s var(--ease-in-out);
+  }
+  .hero__slide.is-active {
+    opacity: 1;
+    z-index: 1;
+  }
+  .hero__slide :global(.media-slot) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  /* Ken Burns: медленный зум + лёгкий сдвиг на активном кадре.
+     Перезапускается при каждом активации (класс is-active) */
+  .hero__slide.is-active :global(.media-slot) {
+    animation: kenburns 16s linear forwards;
+  }
+  @keyframes kenburns {
+    from { transform: scale(1.02) translate(0, 0); }
+    to   { transform: scale(1.12) translate(-0.5%, -1%); }
   }
 
   .hero__scrim {
@@ -81,8 +115,26 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
     inset: 0;
     z-index: -1;
     background:
-      linear-gradient(to bottom, var(--overlay-top) 0%, transparent 26%),
-      linear-gradient(to top, var(--overlay-bottom) 0%, transparent 62%);
+      radial-gradient(120% 85% at 50% 42%, transparent 42%, rgba(12, 8, 5, 0.58) 100%),
+      linear-gradient(to bottom, var(--overlay-top) 0%, transparent 30%),
+      linear-gradient(to top, var(--overlay-bottom) 0%, transparent 60%);
+  }
+
+  /* Янтарный «свет костра» — мягкое тёплое свечение снизу, слегка дышит */
+  .hero__firelight {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 55% at 50% 108%, var(--glow-amber) 0%, transparent 70%);
+    opacity: 0.7;
+    animation: firelight 7s var(--ease-in-out) infinite;
+    transform-origin: 50% 100%;
+  }
+  @keyframes firelight {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.9;  transform: scale(1.06); }
   }
 
   .hero__content {
@@ -107,6 +159,7 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
     line-height: 1.02;
     margin: 14px 0 0;
     color: var(--on-media);
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
   }
   .hero__line {
     display: block;
@@ -133,9 +186,9 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
     margin-top: 20px;
     padding: 8px 16px;
     border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--color-bg) 16%, transparent);
+    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(251, 247, 238, 0.28);
+    border: 1px solid color-mix(in srgb, var(--on-media) 26%, transparent);
     font-weight: 600;
     font-size: var(--step-0);
     opacity: 0;
@@ -163,15 +216,15 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
   }
   .hero__btn--cta {
     background: var(--color-cta);
-    color: var(--on-media);
-    box-shadow: var(--shadow-md);
+    color: #fff8ef;
+    box-shadow: var(--shadow-md), 0 0 26px var(--glow-amber);
   }
   .hero__btn--cta:hover { background: var(--color-cta-hover); transform: translateY(-2px); }
   .hero__btn--ghost {
-    border: 1.5px solid rgba(251, 247, 238, 0.55);
+    border: 1.5px solid color-mix(in srgb, var(--on-media) 55%, transparent);
     color: var(--on-media);
   }
-  .hero__btn--ghost:hover { background: rgba(251, 247, 238, 0.12); transform: translateY(-2px); }
+  .hero__btn--ghost:hover { background: color-mix(in srgb, var(--on-media) 12%, transparent); transform: translateY(-2px); }
 
   .hero__scroll {
     position: absolute;
@@ -210,6 +263,10 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
   }
   @media (max-width: 767px) {
     .hero__scroll { display: none; }
+    /* На мобильных — только первый кадр (статичный постер, экономия трафика/батареи) */
+    .hero__slide:nth-child(n + 2) { display: none; }
+    .hero__slide { transition: none; }
+    .hero__slide.is-active :global(.media-slot) { animation: none; transform: none; }
   }
 
   @keyframes hero-up {
@@ -228,5 +285,23 @@ const titleLines = ['Тихий отдых на Дону', 'у самой вод
     .hero__eyebrow, .hero__sub, .hero__price, .hero__actions, .hero__scroll { animation: none; opacity: 1; }
     .hero__line > span { animation: none; transform: none; }
     .hero__scroll-line::after { animation: none; }
+    .hero__firelight { animation: none; opacity: 0.55; }
+    .hero__slide { transition: none; }
+    .hero__slide.is-active :global(.media-slot) { animation: none; }
   }
 </style>
+
+<script>
+  // Кроссфейд-цикл слайдов. Только десктоп + не reduce-motion (на мобильных CSS оставляет один кадр).
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('[data-slide]'));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desktop = window.matchMedia('(min-width: 768px)').matches;
+  if (slides.length > 1 && !reduced && desktop) {
+    let i = 0;
+    window.setInterval(() => {
+      slides[i].classList.remove('is-active');
+      i = (i + 1) % slides.length;
+      slides[i].classList.add('is-active');
+    }, 7000);
+  }
+</script>

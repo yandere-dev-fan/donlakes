@@ -1,0 +1,35 @@
+---
+import { roads, smoothRoad, walkingPaths } from '../content/map-geometry';
+import { places } from '../content/places';
+const beach=places.find(p=>p.id==='beach')!;
+const volleyball=places.find(p=>p.id==='volleyball')!;
+const parking=places.find(p=>p.id==='parking')!;
+const paths=walkingPaths([beach.x,beach.y],[volleyball.x,volleyball.y]);
+---
+<svg class="map-drawing" viewBox="300 240 1200 850" aria-hidden="true">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    {Object.entries(paths).map(([id,d])=><path data-walkway={id} d={d} stroke="#b09d79" stroke-width="7"/>)}
+    {Object.entries(paths).map(([id,d])=><path data-walkway={id} d={d} stroke="#f1e4c8" stroke-width="3" stroke-dasharray="5 6"/>)}
+  </g>
+  <!-- Draw every border first, then every surface: no seams across junctions. -->
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    {Object.entries(roads).map(([id,road])=><path data-road={id} class="road-edge" d={smoothRoad(road.points)} stroke="#b9b8a8" stroke-width="18"/>)}
+    {Object.entries(roads).map(([id,road])=><path data-road={id} class="road-surface" d={smoothRoad(road.points)} stroke="#faf8ed" stroke-width="12"/>)}
+  </g>
+  {places.filter(p=>p.id.startsWith('object-') || p.id==='facilities').map(p=>{
+    const n=Number(p.number);const platform=[16,19].includes(n);const gazebo=[6,9,17].includes(n);
+    const facilities=p.id==='facilities';
+    const w=facilities?26:platform?42:n===6?52:[11,12,13,15,18].includes(n)?36:n===2?42:26;
+    const h=facilities?19:platform?28:n===6?30:[11,12,13,15,18].includes(n)?28:n===2?32:22;
+    return <g data-feature={p.id} transform={`translate(${p.x} ${p.y})`}>
+      <g transform="rotate(24)"><rect x={-w/2} y={-h/2} width={w} height={h} rx="1.5" fill={platform?'#b99a73':n<=3?'#c8c8bb':gazebo?'#c2ad8a':'#cbbb9f'} stroke="#8f8269" stroke-width={facilities?2:1.5}/>
+      {facilities && <path d="M-10 0H10" fill="none" stroke="#8f8269" stroke-width="1.5"/>}
+      {platform && <path d={`M${-w/2+7} ${-h/2}v${h}m7 ${-h}v${h}m7 ${-h}v${h}m7 ${-h}v${h}`} fill="none" stroke="#997e58" stroke-width="1"/>}</g>
+    </g>;
+  })}
+  <g data-feature="beach" transform={`translate(${beach.x} ${beach.y})`}><ellipse rx="45" ry="18" transform="rotate(22)" fill="#e4d5af"/><text y="38" text-anchor="middle" font-size="18" fill="#6a765f">Пляж</text></g>
+  <g data-feature="volleyball" transform={`translate(${volleyball.x} ${volleyball.y})`}><g transform="rotate(24)" fill="none" stroke="#9b8b66" stroke-width="2"><rect x="-48" y="-25" width="96" height="50" fill="#e4d5af"/><path d="M0-25V25"/></g></g>
+  <g data-feature="parking" transform={`translate(${parking.x} ${parking.y})`}><rect x="-42" y="-11" width="84" height="22" rx="2" transform="rotate(24.3)" fill="#cbd1bd" fill-opacity=".65" stroke="#839478" stroke-width="1.5" stroke-dasharray="4 5"/></g>
+  <path d="M305 417L453 480Q503 498 545 594Q565 640 528 690Q513 705 482 682L368 575Q349 558 297 542" fill="none" stroke="#60857b" stroke-width="6" stroke-dasharray="2 13" stroke-linecap="round"/>
+  <g fill="#b79670" stroke="#8b795e" stroke-width="1.5"><path d="m443 480 18 7-5 13-18-7Z"/><path d="m515 557 9 16-12 7-9-16Z"/><path d="m494 681-16-14 9-10 16 14Z"/></g>
+</svg>
