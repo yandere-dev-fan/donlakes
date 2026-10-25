@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // Статический сайт-визитка «Донские озёра».
-// SSG-вывод + точечные React-острова для интерактива (галерея, карта, меню).
+// SSG-вывод; галерея, карта и меню используют браузерные модули.
 // Публичная статика обслуживается Nginx; админка работает отдельно через Tailscale.
 export default defineConfig({
   site: 'https://donozera.ru',

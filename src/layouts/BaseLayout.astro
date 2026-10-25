@@ -4,6 +4,8 @@ import content from '../content/managed.json';
 import { phoneLabel } from '../lib/format';
 interface Props { title?: string; description?: string; solidHeader?: boolean; noindex?: boolean }
 const { noindex = false, title = 'Донские озёра — отдых у воды рядом с Ростовом', description = 'Домики, баня, беседки и рыбалка на базе «Донские озёра». В 20 минутах от Ростова и Новочеркасска. Фото, цены и карта территории.' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL('/images/banya_night2.webp', Astro.site);
 ---
 <!doctype html>
 <html lang="ru">
@@ -12,6 +14,7 @@ const { noindex = false, title = 'Донские озёра — отдых у в
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
     <meta name="theme-color" content="#203e35" />
     <script is:inline>
       (() => { let theme; try { theme = localStorage.getItem('donozera-theme'); } catch {} document.documentElement.dataset.theme = theme === 'dark' || theme === 'light' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; })();
@@ -19,6 +22,7 @@ const { noindex = false, title = 'Донские озёра — отдых у в
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:type" content="website" /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:locale" content="ru_RU" />
+    <meta property="og:url" content={canonical} /><meta property="og:site_name" content="Донские озёра" /><meta property="og:image" content={socialImage} />
   </head>
   <body><a class="skip-link" href="#main">Перейти к содержимому</a><slot />
     <div class="quick-actions" aria-label="Быстрые действия">

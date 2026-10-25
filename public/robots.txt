@@ -3,3 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /map-review/
+Sitemap: https://donozera.ru/sitemap-index.xml

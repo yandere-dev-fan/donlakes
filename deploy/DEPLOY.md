@@ -1,6 +1,6 @@
 # Установка и эксплуатация
 
-Актуальная схема: GitHub `yandere-dev-fan/donlakes` → GitHub Actions → `135.106.164.41`, Nginx на порту 80. Админка слушает только `127.0.0.1:8787`, снаружи доступна через **Tailscale Serve**, без Funnel.
+Актуальная схема: GitHub `yandere-dev-fan/donlakes` → GitHub Actions → `135.106.164.41`, публичный адрес `https://donozera.ru`, Nginx на портах 80/443. Админка слушает только `127.0.0.1:8787`, снаружи доступна через **Tailscale Serve**, без Funnel.
 
 ## Что хранится на сервере
 
@@ -27,7 +27,7 @@ npm ci --no-audit --no-fund
 flock /var/lib/donozera/publish.lock node deploy/publish.mjs --source "$PWD"
 ```
 
-Установите `deploy/server/nginx.conf` как `/etc/nginx/sites-available/donozera`, включите его в `sites-enabled`, отключите стандартный default, проверьте `nginx -t` и перезагрузите Nginx. Установите unit админки в `/etc/systemd/system/donozera-admin.service`, выполните `systemctl daemon-reload` и `systemctl enable --now donozera-admin`.
+Установите `deploy/server/site.conf` как `/etc/nginx/snippets/donozera-site.conf`, а `deploy/server/nginx-bootstrap.conf` как `/etc/nginx/sites-available/donozera`. Включите сайт в `sites-enabled`, отключите стандартный default, проверьте `nginx -t` и перезагрузите Nginx. После настройки DNS выполните `bash deploy/server/enable-domain.sh` от root: скрипт проверит публичные A/AAAA, выпустит сертификат и установит итоговую HTTPS-конфигурацию `nginx.conf`. До выпуска сертификата HTTPS-конфигурацию устанавливать нельзя. Установите unit админки в `/etc/systemd/system/donozera-admin.service`, выполните `systemctl daemon-reload` и `systemctl enable --now donozera-admin`.
 
 Установите `deploy/server/receive.sh` как root-owned исполняемый `/usr/local/bin/donozera-deploy`. Публичный ключ CI поместите в `/home/donozera/.ssh/authorized_keys` с ограничением:
 
@@ -68,9 +68,9 @@ tailscale serve status
 
 ```sh
 curl -f http://127.0.0.1/healthz
-curl -I http://127.0.0.1/
-curl -I http://127.0.0.1/admin/
-curl -I http://127.0.0.1/map-review/
+curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/
+curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/admin/
+curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/map-review/
 ss -lntp
 systemctl status donozera-admin nginx
 ```
@@ -89,4 +89,10 @@ bash /opt/donozera/source/deploy/server/rollback.sh
 
 Резервная копия должна включать `/var/lib/donozera`, `/var/www/donozera/releases`, `/opt/donozera/incoming`, конфигурации Nginx и systemd, `/home/donozera/.ssh/authorized_keys`. Обычный деплой кода не является копией пользовательских правок. Копировать нужно с сохранением ссылок и прав доступа. Перед очисткой старых версий убедитесь, что они не являются целями `source`, `current`, `previous` и не используются выполняющейся сборкой. Автоматического удаления резервных релизов нет; за диском следует следить.
 
-Публичный адрес на первом этапе использует HTTP. Подключение домена и публичного TLS выполняется отдельно после настройки DNS. Админка использует приватный HTTPS Tailscale.
+## Домен и HTTPS
+
+В Timeweb нужны A-записи `@` и `www` со значением `135.106.164.41`. AAAA-записи не добавляются без настроенного публичного IPv6. После распространения DNS скрипт `enable-domain.sh` выпускает сертификат для `donozera.ru` и `www.donozera.ru`, включает HTTPS и настраивает автоматическое продление с безопасной перезагрузкой Nginx.
+
+Основной публичный адрес — `https://donozera.ru`. HTTP и www перенаправляются на него с сохранением пути и параметров. По IP сайт не отдаётся: HTTP перенаправляется на основной домен, а HTTPS с неизвестным SNI отклоняется. `/healthz` остаётся доступен локально и по IP для служебной проверки деплоя.
+
+Проверка продления: `certbot renew --cert-name donozera.ru --dry-run`. Админка использует отдельный приватный HTTPS Tailscale.
