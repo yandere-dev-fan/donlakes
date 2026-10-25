@@ -1,5 +1,7 @@
 ---
+import Icon from '../components/Icon.astro';
 import '../styles/global.css';
+import '../styles/map.css';
 import content from '../content/managed.json';
 import { phoneLabel } from '../lib/format';
 interface Props { title?: string; description?: string; solidHeader?: boolean; noindex?: boolean }
@@ -26,8 +28,8 @@ const socialImage = new URL('/images/banya_night2.webp', Astro.site);
   </head>
   <body><a class="skip-link" href="#main">Перейти к содержимому</a><slot />
     <div class="quick-actions" aria-label="Быстрые действия">
-      <button class="theme-toggle" type="button" aria-label="Включить тёмную тему" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><span>Тёмная тема</span></button>
-      <a class="quick-call" href={`tel:${content.contact.phone}`} aria-label={`Позвонить на базу: ${phoneLabel(content.contact.phone)}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 3 4 5-3 3c2 3 3 4 6 6l3-3 5 4c-1 4-4 4-7 2C8 17 4 13 3 8c-1-3 0-5 3-5Z"/></svg><span>Позвонить</span></a>
+      <button class="theme-toggle" type="button" aria-label="Включить тёмную тему" aria-pressed="false"><Icon name="moon" class="theme-moon" /><Icon name="sun" class="theme-sun" /><span data-theme-label>Тёмная тема</span></button>
+      <a class="quick-call" href={`tel:${content.contact.phone}`} aria-label={`Позвонить на базу: ${phoneLabel(content.contact.phone)}`}><Icon name="phone" /><span>Позвонить</span></a>
     </div>
     <script>import '../lib/theme';</script>
   </body>

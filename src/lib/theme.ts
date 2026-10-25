@@ -7,7 +7,7 @@ function applyTheme(theme: string) {
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
   toggle.setAttribute('aria-pressed', String(dark));
   toggle.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
-  toggle.querySelector('span')!.textContent = dark ? 'Светлая тема' : 'Тёмная тема';
+  toggle.querySelector('[data-theme-label]')!.textContent = dark ? 'Светлая тема' : 'Тёмная тема';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#121f1b' : '#f9f8f3');
 }
 applyTheme(document.documentElement.dataset.theme || 'light');

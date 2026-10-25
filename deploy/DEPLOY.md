@@ -68,9 +68,9 @@ tailscale serve status
 
 ```sh
 curl -f http://127.0.0.1/healthz
-curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/
-curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/admin/
-curl --resolve donozera.ru:443:127.0.0.1 -I https://donozera.ru/map-review/
+curl --resolve donozera.ru:443:135.106.164.41 -I https://donozera.ru/
+curl --resolve donozera.ru:443:135.106.164.41 -I https://donozera.ru/admin/
+curl --resolve donozera.ru:443:135.106.164.41 -I https://donozera.ru/map-review/
 ss -lntp
 systemctl status donozera-admin nginx
 ```
@@ -95,6 +95,6 @@ bash /opt/donozera/source/deploy/server/rollback.sh
 
 Основной публичный адрес — `https://donozera.ru`. HTTP и www перенаправляются на него с сохранением пути и параметров. По IP сайт не отдаётся: HTTP перенаправляется на основной домен, а HTTPS с неизвестным SNI отклоняется. `/healthz` остаётся доступен локально и по IP для служебной проверки деплоя.
 
-Проверка продления: `certbot renew --cert-name donozera.ru --dry-run`. Админка использует отдельный приватный HTTPS Tailscale.
+Проверка продления: `certbot renew --cert-name donozera.ru --dry-run`. Админка использует отдельный приватный HTTPS Tailscale. Nginx слушает HTTPS только на публичном `135.106.164.41:443`: wildcard-привязка к порту 443 конфликтует с Tailscale Serve, который занимает этот порт на адресах tailnet. При смене публичного IP обновите также директивы `listen` в `nginx.conf`.
 
 Если новая делегация ещё распространяется, можно установить одноразовый `donozera-domain.service`. Его скрипты и конфигурации должны лежать в **root-owned** `/usr/local/lib/donozera-domain/`, недоступном для записи пользователю `donozera`. Сервис проверяет только публичный DNS раз в минуту (до 24 часов), а Certbot запускает один раз после совпадения ответов Cloudflare и Google. После успеха отключает свой автозапуск. Состояние: `systemctl status donozera-domain`; журнал: `journalctl -u donozera-domain`. Ошибка выпуска сертификата требует проверки журнала и явного перезапуска сервиса; бесконечных повторных запросов к CA нет.

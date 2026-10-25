@@ -1,3 +1,4 @@
+import { createTerritoryMap } from './territory-map';
 import { applyMapEdits } from './map-overrides';
 import { places } from '../content/places';
 import { galleries } from '../content/galleries';
@@ -44,7 +45,8 @@ dialog.addEventListener('keydown', e => { if(e.target === galleryVideo) return; 
 let touchStart = 0;
 galleryImage.addEventListener('touchstart', e => { touchStart = e.changedTouches[0].clientX; }, {passive:true});
 galleryImage.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - touchStart; if(Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); }, {passive:true});
-function selectPlace(id: string) {
+let territoryMap: ReturnType<typeof createTerritoryMap> | undefined;
+function selectPlace(id: string, focus = true) {
   const p = places.find(p => p.id === id); if (!p) return;
   document.querySelectorAll<HTMLButtonElement>('[data-place]').forEach(b => {
     const active = b.dataset.place === p.id;
@@ -80,18 +82,17 @@ function selectPlace(id: string) {
   document.querySelector('#place-details')!.replaceChildren(...p.details.map(detail => {
     const li = document.createElement('li'); li.textContent = detail; return li;
   }));
-  // Keep selected markers visible when using the list on a narrow screen.
-  const pan = document.querySelector<HTMLElement>('.map-pan')!;
-  const marker = document.querySelector<HTMLElement>(`.map-pin[data-place="${p.id}"]`)!;
-  if(marker && !marker.hidden) pan.scrollTo({ left: marker.offsetLeft - pan.clientWidth / 2, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  territoryMap?.select(id, focus);
 }
 document.querySelectorAll<HTMLButtonElement>('[data-place]').forEach(button => button.addEventListener('click', () => selectPlace(button.dataset.place!)));
 document.querySelector<HTMLSelectElement>('#place-select')?.addEventListener('change', e => selectPlace((e.target as HTMLSelectElement).value));
 
 applyMapEdits();
-window.addEventListener('storage', applyMapEdits);
-window.addEventListener('pageshow', applyMapEdits);
-selectPlace('object-11');
+try { territoryMap = createTerritoryMap(); } catch (error) { console.error('Карта: не удалось включить жесты', error); }
+function refreshMap() { applyMapEdits(); territoryMap?.refresh(); }
+window.addEventListener('storage', refreshMap);
+window.addEventListener('pageshow', refreshMap);
+selectPlace('object-11', false);
 
 // Media failures leave the navigation and contact action usable.
 for (const media of [galleryImage, galleryVideo]) {

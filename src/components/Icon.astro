@@ -1,0 +1,26 @@
+---
+import arrowUpRight from '@tabler/icons/outline/arrow-up-right.svg?raw';
+import arrowDown from '@tabler/icons/outline/arrow-down.svg?raw';
+import arrowLeft from '@tabler/icons/outline/arrow-left.svg?raw';
+import arrowRight from '@tabler/icons/outline/arrow-right.svg?raw';
+import close from '@tabler/icons/outline/x.svg?raw';
+import plus from '@tabler/icons/outline/plus.svg?raw';
+import minus from '@tabler/icons/outline/minus.svg?raw';
+import sun from '@tabler/icons/outline/sun.svg?raw';
+import moon from '@tabler/icons/outline/moon.svg?raw';
+import phone from '@tabler/icons/outline/phone.svg?raw';
+import focus from '@tabler/icons/outline/focus-centered.svg?raw';
+import expand from '@tabler/icons/outline/maximize.svg?raw';
+import hand from '@tabler/icons/outline/hand-move.svg?raw';
+import home from '@tabler/icons/outline/home.svg?raw';
+import fish from '@tabler/icons/outline/fish.svg?raw';
+import flame from '@tabler/icons/outline/flame.svg?raw';
+import umbrella from '@tabler/icons/outline/umbrella.svg?raw';
+import car from '@tabler/icons/outline/car.svg?raw';
+import info from '@tabler/icons/outline/info-circle.svg?raw';
+import trees from '@tabler/icons/outline/trees.svg?raw';
+const icons = { arrowUpRight, arrowDown, arrowLeft, arrowRight, close, plus, minus, sun, moon, phone, focus, expand, hand, home, fish, flame, umbrella, car, info, trees };
+interface Props { name: keyof typeof icons; class?: string }
+const { name, class:className = '' } = Astro.props;
+---
+<span class:list={['ui-icon', className]} aria-hidden="true" set:html={icons[name]} />

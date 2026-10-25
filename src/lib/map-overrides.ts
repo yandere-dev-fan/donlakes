@@ -7,7 +7,7 @@ export function applyMapEdits() {
     const point = edits.points[id] || [place.x, place.y];
     const pin = [point[0] + place.pinX - place.x, point[1] + place.pinY - place.y];
     const marker = document.querySelector<HTMLElement>(`.map-pin[data-place="${id}"]`);
-    if(marker){marker.hidden=!!place.locationPending && !edits.points[id];marker.style.left=`${(pin[0]-mapView.x)/mapView.width*100}%`;marker.style.top=`${(pin[1]-mapView.y)/mapView.height*100}%`;}
+    if(marker && !marker.closest('.leaflet-marker-icon')){marker.hidden=!!place.locationPending && !edits.points[id];marker.style.left=`${(pin[0]-mapView.x)/mapView.width*100}%`;marker.style.top=`${(pin[1]-mapView.y)/mapView.height*100}%`;}
     const connector=document.querySelector<SVGElement>(`[data-connector="${id}"]`);
     if(connector) connector.style.display=place.locationPending && !edits.points[id]?'none':'';
     const line=document.querySelector(`[data-connector="${id}"] line`);

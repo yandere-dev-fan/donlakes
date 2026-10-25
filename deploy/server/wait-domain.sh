@@ -4,8 +4,11 @@
 set -euo pipefail
 server_dir=$(cd -- "$(dirname -- "$0")" && pwd)
 for ((attempt=1; attempt<=1440; attempt++)); do
-    if "$server_dir/enable-domain.sh" --check-dns; then
-        exec "$server_dir/enable-domain.sh"
+    if "$server_dir/enable-domain.sh"; then
+        exit 0
+    else
+        result=$?
+        if [[ "$result" != 75 ]]; then exit "$result"; fi
     fi
     sleep 60
 done

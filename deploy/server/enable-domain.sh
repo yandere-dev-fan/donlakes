@@ -11,7 +11,7 @@ for resolver in ['https://cloudflare-dns.com/dns-query', 'https://dns.google/res
             with urllib.request.urlopen(req,timeout=15) as response: data=json.load(response)
             answers={r['data'] for r in data.get('Answer',[]) if r['type']==(1 if record=='A' else 28)}
             if record=='A' and answers!={'135.106.164.41'}:
-                sys.exit(f'DNS not ready: {hostname} A = {answers}; expected 135.106.164.41 ({resolver})')
+                print(f'DNS not ready: {hostname} A = {answers}; expected 135.106.164.41 ({resolver})'); sys.exit(75)
             if record=='AAAA' and answers:
                 sys.exit(f'Unexpected IPv6 record for {hostname}: {answers}; configure IPv6 before issuing certificate')
 print('Public DNS is ready.')
@@ -38,4 +38,4 @@ set -eu
 HOOK
 chmod 755 /etc/letsencrypt/renewal-hooks/deploy/donozera-nginx
 systemctl enable --now certbot.timer
-curl --fail --silent --show-error --retry 3 --retry-delay 1 --resolve donozera.ru:443:127.0.0.1 https://donozera.ru/healthz
+curl --fail --silent --show-error --retry 3 --retry-connrefused --retry-delay 1 --resolve donozera.ru:443:135.106.164.41 https://donozera.ru/healthz

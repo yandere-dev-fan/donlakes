@@ -1,28 +1,47 @@
 ---
 import content from '../content/managed.json';
 import MapDrawing from './MapDrawing.astro';
+import Icon from './Icon.astro';
 import { places } from '../content/places';
 import { galleries } from '../content/galleries';
 const selected = places.find(p => p.id === 'object-11')!;
 const gallery = galleries[selected.gallery!];
 const px = (x: number) => (x - 300) / 12;
 const py = (y: number) => (y - 240) / 8.5;
-const shortcuts = [['object-11','Срубы'],['object-5','Летние домики'],['object-15','Баня № 1'],['object-18','Баня № 2'],['fishing','Рыбалка'],['beach','Пляж'],['volleyball','Волейбол'],['object-19','Платформа бани № 2'],['parking','Место для машины'],['facilities','Душ, туалет и кухня']];
+const shortcuts = [
+  ['object-11','Срубы','home'], ['object-5','Летние домики','trees'],
+  ['object-15','Баня № 1','flame'], ['object-18','Баня № 2','flame'],
+  ['fishing','Рыбалка','fish'], ['beach','Пляж','umbrella'],
+  ['parking','Парковка','car'], ['facilities','Общие удобства','info'],
+] as const;
 ---
-<div class="map-navigation"><label for="place-select">Объекты базы</label><select id="place-select">{places.map(p=><option value={p.id} selected={p.id===selected.id}>{p.number} — {p.name}</option>)}</select><span>На телефоне схему можно двигать вбок</span></div>
-<div class="map-layout precise-map">
-  <div class="map-pan" tabindex="0" aria-label="Карта территории, прокрутка вбок"><div class="map-stage">
-    <img class="territory" src="/images/territory-plan.svg" alt="Карта двух озёр: рыболовные места по берегам, пляж и бани; домики, две бани, беседки, администрация и дороги" width="1200" height="850" loading="lazy"/>
-    <MapDrawing />
-    <svg class="map-connectors" viewBox="300 240 1200 850" aria-hidden="true">{places.map(p=><g data-connector={p.id} style={p.locationPending ? "display:none" : undefined}><line x1={p.x} y1={p.y} x2={p.pinX} y2={p.pinY} stroke="#5d715c" stroke-width="2"/><circle cx={p.x} cy={p.y} r="3" fill="#5d715c"/></g>)}</svg>
-    {places.map(p => <button class:list={['map-pin', {active:p.id===selected.id, 'service-pin':p.type==='Служебная зона'}]} style={`left:${px(p.pinX)}%;top:${py(p.pinY)}%`} data-place={p.id} hidden={p.locationPending} aria-label={`${p.number}. ${p.name}`} title={`${p.number} — ${p.name}`} aria-pressed={p.id===selected.id}><span>{p.number}</span></button>)}
-  </div></div>
-  <div class="map-detail" aria-live="polite" aria-atomic="true">
-    <div class="map-media"><button class="map-photo gallery-trigger" data-gallery={selected.gallery} aria-label={`Посмотреть фотографии: ${gallery.title}`}><img id="place-photo" src={`/images/${gallery.images[0]}.webp`} alt={selected.alt} loading="lazy" width="960" height="1280"/><span><span id="place-media-label">Смотреть фото</span> <span id="place-photo-count">1 / {gallery.images.length}</span> ↗</span></button><p id="place-photo-note">{selected.photoNote}</p></div>
-    <div class="map-detail-body"><span class="eyebrow" id="place-type">{selected.number} / {selected.type}</span><h3 id="place-title">{selected.name}</h3><p id="place-description">{selected.description}</p><ul id="place-details">{selected.details.map(d=><li>{d}</li>)}</ul><a class="text-link" href={`tel:${content.contact.phone}`}>Узнать подробности <span>↗</span></a></div>
+<div class="map-experience" id="map-experience">
+  <div class="map-navigation"><label for="place-select">Найти на карте</label><select id="place-select">{places.map(p=><option value={p.id} selected={p.id===selected.id}>{p.number} — {p.name}</option>)}</select><span>Выберите метку или объект в списке</span></div>
+  <div class="map-legend" aria-label="Быстрый выбор объекта">{shortcuts.map(([id,label,icon])=><button data-place={id} class:list={['legend-item',{active:id===selected.id}]} aria-pressed={id===selected.id}><Icon name={icon} />{label}</button>)}</div>
+  <div class="map-layout precise-map">
+    <div class="map-pan">
+      <div id="territory-map" class="territory-map" role="region" tabindex="0" aria-label="Интерактивная карта территории" aria-describedby="map-gesture-hint"></div>
+      <div class="map-stage">
+        <img class="territory" src="/images/territory-plan.svg" alt="Схема двух озёр, домиков, бань и пляжа" width="1200" height="850" loading="lazy"/>
+        <MapDrawing />
+        <svg class="map-connectors" viewBox="300 240 1200 850" aria-hidden="true">{places.map(p=><g data-connector={p.id} style={p.locationPending ? "display:none" : undefined}><line x1={p.x} y1={p.y} x2={p.pinX} y2={p.pinY} stroke="#5d715c" stroke-width="2"/><circle cx={p.x} cy={p.y} r="3" fill="#5d715c"/></g>)}</svg>
+        {places.map(p => <button class:list={['map-pin', {active:p.id===selected.id, 'service-pin':p.type==='Служебная зона'}]} style={`left:${px(p.pinX)}%;top:${py(p.pinY)}%`} data-place={p.id} hidden={p.locationPending} aria-label={`${p.number}. ${p.name}`} title={`${p.number} — ${p.name}`} aria-pressed={p.id===selected.id}><span>{p.number}</span></button>)}
+      </div>
+      <div class="map-tools" hidden>
+        <div class="map-zoom-controls" aria-label="Масштаб карты"><button type="button" id="map-zoom-in" aria-label="Приблизить карту"><Icon name="plus" /></button><output id="map-zoom" aria-live="off">100%</output><button type="button" id="map-zoom-out" aria-label="Отдалить карту"><Icon name="minus" /></button></div>
+        <button type="button" id="map-expand" aria-label="Развернуть карту" title="Развернуть карту"><Icon name="expand" class="expand-icon" /><Icon name="close" class="collapse-icon" /></button>
+      </div>
+      <button type="button" id="map-reset" class="map-reset" hidden><Icon name="focus" /><span>Вся территория</span></button>
+      <a class="map-attribution" href="https://leafletjs.com" target="_blank" rel="noopener noreferrer">Leaflet</a>
+    </div>
+    <div class="map-detail" aria-live="polite" aria-atomic="true">
+      <div class="map-media"><button class="map-photo gallery-trigger" data-gallery={selected.gallery} aria-label={`Посмотреть фотографии: ${gallery.title}`}><img id="place-photo" src={`/images/${gallery.images[0]}.webp`} alt={selected.alt} loading="lazy" width="960" height="1280"/><span><span id="place-media-label">Смотреть фото</span> <span id="place-photo-count">1 / {gallery.images.length}</span><Icon name="arrowUpRight" /></span></button><p id="place-photo-note">{selected.photoNote}</p></div>
+      <div class="map-detail-body"><span class="eyebrow" id="place-type">{selected.number} / {selected.type}</span><h3 id="place-title">{selected.name}</h3><p id="place-description">{selected.description}</p><ul id="place-details">{selected.details.map(d=><li>{d}</li>)}</ul><a class="text-link" href={`tel:${content.contact.phone}`}>Узнать подробности <Icon name="arrowUpRight" /></a></div>
+    </div>
   </div>
-</div>
-<div class="map-legend" aria-label="Быстрый выбор объекта">{shortcuts.map(([id,label])=><button data-place={id} class:list={['legend-item',{active:id===selected.id}]} aria-pressed={id===selected.id}><span>{places.find(p=>p.id===id)!.number}</span>{label}</button>)}</div>
-<p class="map-disclaimer">Схема без масштаба. Волейбольная площадка обозначена ориентировочно. Для купания — озеро у бань и пляжа.</p>
+  <div class="map-below"><p id="map-gesture-hint"><Icon name="hand" /><span>Двигайте карту пальцем. Сведите или разведите два пальца, чтобы изменить масштаб.</span></p><span class="map-selection-status" id="map-selection-status" role="status" aria-live="polite"></span></div>
 
-{import.meta.env.DEV && <a class="map-edit-link" href="/map-review/">Уточнить расположение на карте ↗</a>}
+</div>
+<dialog id="map-expanded-dialog" class="map-expanded-dialog" aria-label="Карта территории на весь экран"></dialog>
+<p class="map-disclaimer">Схема без масштаба. Для купания выбирайте озеро у бань и пляжа. Нажмите на группу меток, чтобы увидеть объекты по отдельности.</p>
+{import.meta.env.DEV && <a class="map-edit-link" href="/map-review/">Уточнить расположение на карте <Icon name="arrowUpRight" /></a>}
